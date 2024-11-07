@@ -27,7 +27,7 @@ int get_keyword_token(const char* word);
 //     return 0;  // Not a keyword
 // }
 
-#define helper(token) col += yyleng; return token
+#define helper(token) yylval.pos = A_pos(line, col); col += yyleng; return token
 %}
 
 %option noyywrap
