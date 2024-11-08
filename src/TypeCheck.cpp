@@ -607,7 +607,8 @@ void check_FnDecl(std::ostream &out, aA_fnDecl fd)
     else
     {
         func2Param[name] = &(fd->paramDecl->varDecls);
-        g_token2Type[name] = tc_Type(fd->type, tc::tc_function);
+        // g_token2Type[name] = tc_Type(fd->type, tc::tc_function);
+        (*currScope)[name] = tc_Type(fd->type, tc::tc_function);
 
         if (!is_empty_type(fd->type))
         {
@@ -824,6 +825,8 @@ void check_AssignStmt(std::ostream &out, aA_assignStmt as)
             error_print(out, lhs_pos, temp);
         }
 
+        actual_type = tc_Type(type->type, tc::tc_scalar);
+
         switch (as->rightVal->kind)
         {
         case A_boolExprValKind:
@@ -834,14 +837,14 @@ void check_AssignStmt(std::ostream &out, aA_assignStmt as)
             {
                 if (actual_type && actual_type->isVarArrFunc == 1)
                     error_print(out, as->pos,
-                                "cannot assign a value to array " + name + " on line " +
+                                "1 cannot assign a value to array " + name + " on line " +
                                     std::to_string(as->pos->line) + ", col " +
                                     std::to_string(as->pos->col) + ".");
                 assign_type(name, deduced_type);
             }
             if (comp_tc_type(deduced_type, actual_type) == false)
                 error_print(out, as->pos,
-                            "cannot assign due to type mismatch: " +
+                            "1 cannot assign due to type mismatch: " +
                                 get_type(actual_type) + "!=" + get_type(deduced_type));
         }
         break;
@@ -872,7 +875,7 @@ void check_AssignStmt(std::ostream &out, aA_assignStmt as)
             else if (comp_tc_type(actual_type, deduced_type) == false)
             {
                 error_print(out, as->pos,
-                            "cannot assign due to type mismatch: " +
+                            "1 cannot assign due to type mismatch: " +
                                 get_type(actual_type) + "!=" + get_type(deduced_type));
             }
             // else if (actual_type->isVarArrFunc == 1)
@@ -896,31 +899,31 @@ void check_AssignStmt(std::ostream &out, aA_assignStmt as)
             !as->leftVal->u.arrExpr->idx)
             error_print(out, as->pos, "arrExpr error in leftVal");
 
-        check_ArrayExpr(out, as->leftVal->u.arrExpr);
-        tc_type arr_type = search_identifier(out, *as->leftVal->u.id, as->pos, false);
+        aA_type arrType = check_ArrayExpr(out, as->leftVal->u.arrExpr);
+        // tc_type arr_type = search_identifier(out, *as->arr->u.id, as->pos, false);
 
-        actual_type = tc_Type(arr_type->type, tc::tc_scalar);
+        actual_type = tc_Type(arrType, tc::tc_scalar);
         switch (as->rightVal->kind)
         {
         case A_boolExprValKind:
-            check_BoolExpr(out, as->rightVal->u.boolExpr);
-            deduced_type = bool_type(as->pos);
-            if (comp_tc_type(deduced_type, actual_type) == false)
-                error_print(out, as->pos,
-                            "cannot assign due to array type mismatch: " +
-                                get_type(actual_type) + "!=" + get_type(deduced_type));
-            break;
+            // check_BoolExpr(out, as->rightVal->u.boolExpr);
+            // deduced_type = bool_type(as->pos);
+            // if (comp_tc_type(deduced_type, actual_type) == false)
+            //     error_print(out, as->pos,
+            //                 "cannot assign due to array type mismatch: " +
+            //                     get_type(actual_type) + "!=" + get_type(deduced_type));
+            // break;
         case A_arithExprValKind:
-            deduced_type = check_ArithExpr(out, as->rightVal->u.arithExpr);
-            if (comp_tc_type(deduced_type, actual_type) == false)
-                error_print(out, as->pos,
-                            "cannot assign due to array type mismatch: " +
-                                get_type(actual_type) + "!=" + get_type(deduced_type));
-            if (deduced_type->isVarArrFunc == 2)
-                error_print(out, as->pos,
-                            "cannot assign a function to array member " + name +
-                                " on line " + std::to_string(as->pos->line) + ", col " +
-                                std::to_string(as->pos->col) + ".");
+            // deduced_type = check_ArithExpr(out, as->rightVal->u.arithExpr);
+            // if (comp_tc_type(deduced_type, actual_type) == false)
+            //     error_print(out, as->pos,
+            //                 "cannot assign due to array type mismatch: " +
+            //                     get_type(actual_type) + "!=" + get_type(deduced_type));
+            // if (deduced_type->isVarArrFunc == 2)
+            //     error_print(out, as->pos,
+            //                 "cannot assign a function to array member " + name +
+            //                     " on line " + std::to_string(as->pos->line) + ", col " +
+            //                     std::to_string(as->pos->col) + ".");
             break;
         default:
             error_print(out, as->pos, "Type mismatch in assignment!");
@@ -947,7 +950,7 @@ void check_AssignStmt(std::ostream &out, aA_assignStmt as)
             deduced_type = bool_type(as->pos);
             if (comp_tc_type(deduced_type, actual_type) == false)
                 error_print(out, as->pos,
-                            "cannot assign due to type mismatch: " +
+                            "1 cannot assign due to type mismatch: " +
                                 get_type(actual_type) + "!=" + get_type(deduced_type));
         }
         break;
@@ -962,7 +965,7 @@ void check_AssignStmt(std::ostream &out, aA_assignStmt as)
                                 std::to_string(as->pos->col) + ".");
             if (comp_tc_type(actual_type, deduced_type) == false)
                 error_print(out, as->pos,
-                            "cannot assign due to type mismatch: " +
+                            "1 cannot assign due to type mismatch: " +
                                 get_type(actual_type) + "!=" + get_type(deduced_type));
         }
         break;
@@ -977,7 +980,7 @@ void check_AssignStmt(std::ostream &out, aA_assignStmt as)
     return;
 }
 
-void check_ArrayExpr(std::ostream &out, aA_arrayExpr ae)
+aA_type check_ArrayExpr(std::ostream &out, aA_arrayExpr ae)
 {
     // struct aA_arrayExpr_ {
     //     A_pos pos;
@@ -986,7 +989,7 @@ void check_ArrayExpr(std::ostream &out, aA_arrayExpr ae)
     // };
 
     if (!ae)
-        return;
+        return nullptr;
 
     string name = *ae->arr->u.id;
     // check array name
@@ -1054,6 +1057,15 @@ void check_ArrayExpr(std::ostream &out, aA_arrayExpr ae)
     switch (ae->idx->kind)
     {
     case A_numIndexKind:
+        if (
+            arr_type->arrayLength <= ae->idx->u.num || 
+            ae->idx->u.num < 0
+        )
+            error_print(
+                out, 
+                ae->pos, 
+                "Array index out of bound!"
+            );
         break;
     case A_idIndexKind:
     {
@@ -1091,7 +1103,7 @@ void check_ArrayExpr(std::ostream &out, aA_arrayExpr ae)
         break;
     }
 
-    return;
+    return arr_type->type;
 }
 
 tc_type check_MemberExpr(std::ostream &out, aA_memberExpr me)
