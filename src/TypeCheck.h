@@ -7,6 +7,9 @@
 #include "TeaplAst.h"
 #include "TeaplaAst.h"
 #include <unordered_map>
+#include <unordered_set>
+#include <algorithm>
+#include <assert.h>
 
 // token id to token type, including function name to return type
 typedef struct tc_type_* tc_type;
@@ -35,7 +38,37 @@ void check_WhileStmt(std::ostream& out, aA_whileStmt ws);
 void check_CallStmt(std::ostream& out, aA_callStmt cs);
 void check_ReturnStmt(std::ostream& out, aA_returnStmt rs);
 
+typedef enum {
+    tc_scalar,
+    tc_array,
+    tc_function
+} tc;
+
 struct tc_type_{
     aA_type type;
-    uint isVarArrFunc; // 0 for scalar, 1 for array, 2 for function
+    // uint isVarArrFunc; // 0 for scalar, 1 for array, 2 for function
+    tc isVarArrFunc;
+    uint arrayLength;
 };
+
+void assign_type(std::string name, tc_type t);
+
+tc_type search_identifier(std::ostream &out, std::string name, A_pos pos, bool availability);
+tc_type search_identifier(std::ostream &out, std::string name, A_pos pos, bool availability = true);
+
+bool is_empty_type(tc_type t);
+bool is_empty_type(aA_type type);
+bool is_typed(tc_type t);
+
+tc_type bool_type(A_pos pos);
+string get_type(tc_type type);
+
+void check_struct_defined(
+    std::ostream &out,
+    A_pos pos,
+    aA_type type,
+    string error_msg
+);
+
+void scopeIn();
+void scopeOut();
