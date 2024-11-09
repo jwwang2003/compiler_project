@@ -327,14 +327,14 @@ void check_VarDecl(std::ostream &out, aA_varDeclStmt vd)
                 tc_type right_type = check_ArithExpr(out, scalar->val->u.arithExpr);
                 if (is_empty_type(right_type))
                 {
-                    error_print(out, vdef->pos, "Type mismatch in varDecl!");
+                    error_print(out, vdef->pos, "type mismatch in varDecl");
                 }
                 if (!comp_tc_type(left_type, right_type))
                 {
                     error_print(
                         out,
                         vdef->pos,
-                        "struct type in varDecl! (decl and def mismatch)");
+                        "struct type in varDecl (decl and def mismatch)");
                 }
                 (*currScope)[name] = left_type;
             }
@@ -553,10 +553,10 @@ void check_FnDecl(std::ostream &out, aA_fnDecl fd)
 
         if (fn_type_2 != g_token2Type.end())
         {
-          if (fd->type->type != fn_type_2->second->type->type)
-          {
-            error_print(out, fd->pos, "function return type does not match existing declaration");
-          }
+            if (fd->type->type != fn_type_2->second->type->type)
+            {
+                error_print(out, fd->pos, "function return type does not match existing declaration");
+            }
         }
 
         // is function params matches decl
@@ -701,17 +701,24 @@ void check_FnDef(std::ostream &out, aA_fnDef fd)
     for (const aA_varDecl vd : fd->fnDecl->paramDecl->varDecls)
     {
         // Loop through every parameter
-        if (!vd || !vd->u.declScalar || !vd->u.declScalar->id || !vd->u.declArray || !vd->u.declArray->id)
+        if (
+            !vd ||
+            !vd->u.declScalar ||
+            !vd->u.declScalar->id ||
+            !vd->u.declArray || !vd->u.declArray->id)
         {
             error_print(out, fd->pos, "function parameter is null");
         }
-         
+
         string name = *vd->u.declScalar->id;
 
         if (funcparam_token2Type.find(name) != funcparam_token2Type.end())
         {
             char err_msg[100];
-            sprintf(err_msg, "identifier '%s' is taken (function parameter)", name.c_str());
+            sprintf(
+                err_msg,
+                "identifier '%s' is taken (function parameter)",
+                name.c_str());
             error_print(out, vd->pos, err_msg);
         }
 
@@ -744,7 +751,10 @@ void check_FnDef(std::ostream &out, aA_fnDef fd)
     if (!fn_returned && is_typed(fn_retType))
     {
         char err_msg[100];
-        sprintf(err_msg, "function %s is typed so it should have a return value", fd->fnDecl->id->c_str());
+        sprintf(
+            err_msg,
+            "function %s is typed so it should have a return value",
+            fd->fnDecl->id->c_str());
         error_print(out, fd->pos, err_msg);
     }
 
@@ -836,59 +846,62 @@ void check_AssignStmt(std::ostream &out, aA_assignStmt as)
             if (!is_typed(actual_type))
             {
                 if (actual_type && actual_type->isVarArrFunc == 1)
-                    error_print(out, as->pos,
-                                "1 cannot assign a value to array " + name + " on line " +
-                                    std::to_string(as->pos->line) + ", col " +
-                                    std::to_string(as->pos->col) + ".");
+                    error_print(out, as->pos, "cannot assign a value to array " + name);
                 assign_type(name, deduced_type);
             }
             if (comp_tc_type(deduced_type, actual_type) == false)
-                error_print(out, as->pos,
-                            "1 cannot assign due to type mismatch: " +
-                                get_type(actual_type) + "!=" + get_type(deduced_type));
+            {
+                char err_msg[100];
+                sprintf(
+                    err_msg,
+                    "cannot assign due to type mismatch, %s != %s",
+                    get_type(actual_type).c_str(),
+                    get_type(deduced_type).c_str());
+                error_print(out, as->pos, err_msg);
+            }
         }
         break;
         case A_arithExprValKind:
         {
             deduced_type = check_ArithExpr(out, as->rightVal->u.arithExpr);
             if (!is_typed(deduced_type))
-                error_print(out, as->pos,
-                            "cannot assign void value to variable " + name +
-                                " on line " + std::to_string(as->pos->line) + ", col " +
-                                std::to_string(as->pos->col) + ".");
-            if (deduced_type->isVarArrFunc == 2)
-                error_print(out, as->pos,
-                            "cannot assign a function " + name + " on line " +
-                                std::to_string(as->pos->line) + ", col " +
-                                std::to_string(as->pos->col) + ".");
+                error_print(out, as->pos, "cannot assign void value to variable");
+            if (deduced_type->isVarArrFunc == tc::tc_function)
+                error_print(out, as->pos, "cannot assign a function ");
             if (!is_typed(actual_type) && actual_type)
             {
                 if (actual_type->isVarArrFunc != deduced_type->isVarArrFunc)
-                    error_print(out, as->pos,
-                                "cannot assign a value to " + name + " on line " +
-                                    std::to_string(as->pos->line) + ", col " +
-                                    std::to_string(as->pos->col) +
-                                    " due to isVarArrFunc mismatch.");
+                    error_print(out, as->pos, "cannot assign a value to " + name);
                 // check array length if you want
                 assign_type(name, deduced_type);
             }
             else if (comp_tc_type(actual_type, deduced_type) == false)
             {
-                error_print(out, as->pos,
-                            "1 cannot assign due to type mismatch: " +
-                                get_type(actual_type) + "!=" + get_type(deduced_type));
+                char err_msg[100];
+                sprintf(
+                    err_msg,
+                    "cannot assign due to type mismatch, %s != %s",
+                    get_type(actual_type).c_str(),
+                    get_type(deduced_type).c_str());
+                error_print(out, as->pos, err_msg);
             }
-            // else if (actual_type->isVarArrFunc == 1)
-            // {
-            // if (actual_type->arrayLength != deduced_type->arrayLength)
-            // error_print(out, as->pos, "cannot assign due to array length
-            // mismatch: " + std::to_string(actual_type->arrayLength) + "!=" +
-            // std::to_string(deduced_type->arrayLength));
-            // }
+            else if (actual_type->isVarArrFunc == tc::tc_array)
+            {
+                if (actual_type->arrayLength != deduced_type->arrayLength)
+                {
+                    char err_msg[100];
+                    sprintf(
+                        err_msg,
+                        "cannot assign due to array length mismatch, %i != %i",
+                        actual_type->arrayLength,
+                        deduced_type->arrayLength);
+                    error_print(out, as->pos, err_msg);
+                }
+            }
         }
         break;
         default:
-            error_print(out, as->pos, "Type mismatch in assignment!");
+            error_print(out, as->pos, "type mismatch in assignment");
             break;
         }
     }
@@ -932,7 +945,7 @@ void check_AssignStmt(std::ostream &out, aA_assignStmt as)
     }
     break;
     case A_leftValType::A_memberValKind:
-    {   
+    {
         /**
          * We need to check:
          * 1. If the struct exists
@@ -949,29 +962,40 @@ void check_AssignStmt(std::ostream &out, aA_assignStmt as)
             check_BoolExpr(out, as->rightVal->u.boolExpr);
             deduced_type = bool_type(as->pos);
             if (comp_tc_type(deduced_type, actual_type) == false)
-                error_print(out, as->pos,
-                            "1 cannot assign due to type mismatch: " +
-                                get_type(actual_type) + "!=" + get_type(deduced_type));
+            {
+                char err_msg[100];
+                sprintf(
+                    err_msg,
+                    "cannot assign due to type mismatch, %s != %s",
+                    get_type(actual_type).c_str(),
+                    get_type(deduced_type).c_str());
+                error_print(out, as->pos, err_msg);
+            }
         }
         break;
 
         case A_arithExprValKind:
         {
             deduced_type = check_ArithExpr(out, as->rightVal->u.arithExpr);
-            if (deduced_type->isVarArrFunc == 2)
-                error_print(out, as->pos,
-                            "cannot assign a function to struct member " + name +
-                                " on line " + std::to_string(as->pos->line) + ", col " +
-                                std::to_string(as->pos->col) + ".");
+            if (deduced_type->isVarArrFunc == tc::tc_function)
+                error_print(
+                    out,
+                    as->pos,
+                    "cannot assign a function to struct member " + name);
             if (comp_tc_type(actual_type, deduced_type) == false)
-                error_print(out, as->pos,
-                            "1 cannot assign due to type mismatch: " +
-                                get_type(actual_type) + "!=" + get_type(deduced_type));
+            {
+                char err_msg[100];
+                sprintf(
+                    err_msg,
+                    "cannot assign due to type mismatch, %s != %s",
+                    get_type(actual_type).c_str(),
+                    get_type(deduced_type).c_str());
+                error_print(out, as->pos, err_msg);
+            }
         }
         break;
-
         default:
-            error_print(out, as->pos, "Type mismatch in assignment!");
+            error_print(out, as->pos, "type mismatch in assignment");
             break;
         }
     }
@@ -1058,14 +1082,12 @@ aA_type check_ArrayExpr(std::ostream &out, aA_arrayExpr ae)
     {
     case A_numIndexKind:
         if (
-            arr_type->arrayLength <= ae->idx->u.num || 
-            ae->idx->u.num < 0
-        )
+            arr_type->arrayLength <= ae->idx->u.num ||
+            ae->idx->u.num < 0)
             error_print(
-                out, 
-                ae->pos, 
-                "Array index out of bound!"
-            );
+                out,
+                ae->pos,
+                "Array index out of bound!");
         break;
     case A_idIndexKind:
     {
@@ -1177,31 +1199,35 @@ tc_type check_MemberExpr(std::ostream &out, aA_memberExpr me)
     string member = *me->memberId;
 
     bool found = false;
-    for (const auto mem : *members) {
-        switch (mem->kind) {
-            case A_varDeclScalarKind:
-                if (*mem->u.declScalar->id == memberId) {
-                    found = true;
-                    break;
-                }
+    for (const auto mem : *members)
+    {
+        switch (mem->kind)
+        {
+        case A_varDeclScalarKind:
+            if (*mem->u.declScalar->id == memberId)
+            {
+                found = true;
                 break;
-            case A_varDeclArrayKind:
-                if (*mem->u.declArray->id == memberId) {
-                    found = true;
-                    break;
-                }
+            }
+            break;
+        case A_varDeclArrayKind:
+            if (*mem->u.declArray->id == memberId)
+            {
+                found = true;
                 break;
+            }
+            break;
         }
     }
 
-    if (found == false) {
+    if (found == false)
+    {
         char err_msg[100];
         sprintf(
             err_msg,
             "member '%s' is not defined in struct '%s'",
             memberId.c_str(),
-            name.c_str()
-        );
+            name.c_str());
         error_print(out, me->pos, err_msg);
     }
 
@@ -1649,7 +1675,8 @@ tc_type exists_in_scope(std::string name, int scope)
 
     // If locally scoped was not found, then check global
     tc_type g_type = exists_global(name);
-    if (g_type != nullptr) {
+    if (g_type != nullptr)
+    {
         return g_type;
     }
 
@@ -1671,7 +1698,7 @@ tc_type exists_in_funcparam(std::string name)
  * If the no identifier was found but is expected to be taken, we throw an error
  */
 tc_type search_identifier(std::ostream &out, std::string name, A_pos pos,
-    bool availability)
+                          bool availability)
 {
     /**
      * "availability" indicates whether we are checking if an identifier exists
