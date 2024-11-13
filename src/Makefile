@@ -2,14 +2,18 @@ CXX = clang++
 CXXFLAGS = -std=c++17 -g
 
 TESTCASE_DIR := tests
+OUTPUT_DIR := output
 TESTCASES = $(wildcard $(TESTCASE_DIR)/*.tea)
 LLFILES = $(patsubst $(TESTCASE_DIR)/%.tea,$(TESTCASE_DIR)/%.ast,$(TESTCASES))
 
 .SECONDARY: $(LLFILES)
 
+
 run: $(patsubst $(TESTCASE_DIR)/%.tea,$(TESTCASE_DIR)/%.ll,$(TESTCASES))
+	
 
 $(TESTCASE_DIR)/%.ll: $(TESTCASE_DIR)/%.tea compiler
+	@mkdir -p output
 #	@echo TEST $*
 	@./test-functional.sh $*
 	@echo 

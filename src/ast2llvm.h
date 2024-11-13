@@ -64,4 +64,11 @@ int ast2llvmArithUExpr_first(aA_arithUExpr a);
 int ast2llvmArithExpr_first(aA_arithExpr a);
 int ast2llvmExprUnit_first(aA_exprUnit e);
 
+AS_operand *getArray(aA_arrayExpr arrExpr);
+AS_operand *getMember(aA_memberExpr memExpr);
+// void getCodeBlockStmts(vector<aA_codeBlockStmt> stmts, string *fnname);
+AS_operand *loadPtr(AS_operand *res);
+void put_right_vals_into_array(Temp_temp *new_arr, vector<aA_rightVal> vals, int len, TempType type, string structname = "");
+
+
 #endif
