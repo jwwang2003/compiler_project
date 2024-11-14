@@ -1,0 +1,41 @@
+fn getch()->int;
+fn getint()->int;
+fn putint(a:int);
+fn putch(a:int);
+fn putarray(n:int,a[10]:int);
+fn _sysy_starttime(a:int);
+fn _sysy_stoptime(a:int);
+
+fn mod(a:int,b:int)->int
+{
+    ret a-(a/b)*b;
+}
+
+fn pow(a:int,b:int)->int
+{
+    let ans:int = 1;
+    let base:int = a;
+    while(b > 0)
+    {
+        let m:int = mod(b,2);
+        if(m == 1)
+        {
+            ans = ans * base;
+        }
+        base = base * base;
+        b = b / 2;
+    }
+    ret ans;
+}
+
+fn main()->int
+{
+    let a;
+    let b;
+    a = getint();
+    b = getint();
+    let ans;
+    ans = pow(a,b);
+    putint(ans);
+    ret 0;
+}
