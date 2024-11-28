@@ -2,7 +2,7 @@
 func_testcase_dir=$(realpath $(dirname "$0")/./tests/public)
 # func_testcase_dir=$(realpath $(dirname "$0")/./tests/end)
 # func_testcase_dir=$(realpath $(dirname "$0")/./tests/end2)
-# func_testcase_dir=$(realpath $(dirname "$0")/./tests/private)
+func_testcase_dir=$(realpath $(dirname "$0")/./tests/private)
 test_single() {
 	test_file=`realpath --relative-base=$func_testcase_dir $func_testcase_dir/$1.tea`	
 	test_name=${test_file%.tea}

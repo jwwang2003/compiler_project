@@ -1,10 +1,10 @@
 CXX = clang++
 CXXFLAGS = -std=c++17 -g 
 
-TESTCASE_DIR := tests/public
+ TESTCASE_DIR := tests/public
 # TESTCASE_DIR := tests/end
 # TESTCASE_DIR := tests/end2
-# TESTCASE_DIR := tests/private
+TESTCASE_DIR := tests/private
 TESTCASES = $(wildcard $(TESTCASE_DIR)/*.tea)
 LLFILES = $(patsubst $(TESTCASE_DIR)/%.tea,$(TESTCASE_DIR)/%.ast,$(TESTCASES))
 
