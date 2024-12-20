@@ -96,7 +96,7 @@ namespace ASM
         BCOND,
         BL,
         CMP,
-        RET,
+        RETURN,
         ADR,
         LLVMIR
     };
@@ -228,7 +228,7 @@ namespace ASM
             AS_bl *BL;
             AS_cmp *CMP;
 
-            AS_ret *RET;
+            AS_ret *RETURN;
             AS_llvmir *LLVMIR;
         } u;
     };

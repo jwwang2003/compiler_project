@@ -63,11 +63,16 @@ int main(int argc, char * argv[]) {
 
     ofstream LLVMStream;
     LLVMStream.open(file_name + ".ll");
+
+    printf("Starting [AST->LLVM]\n");
     auto l_prog = ast2llvm(aroot);
+    
+    printf("Starting [SSA]\n");
     l_prog=SSA(l_prog);
     printL_prog(LLVMStream,l_prog);
     LLVMStream.close();
 
+    printf("Starting [LLVM->ASM]\n");
     ofstream ASMStream;
     ASMStream.open(file_name + ".S");
     auto as_prog = llvm2asm(*l_prog);

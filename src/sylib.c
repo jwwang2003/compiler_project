@@ -11,7 +11,7 @@ void putint(int a){ printf("%d",a);}
 void putch(int a){ printf("%c",a); }
 void putarray(int n,int a[]){
   printf("%d:",n);
-  for(int i=0;i<n;i++)printf(" %d",a[i]);
+  for(int i=0;i<n*2;i+=2)printf(" %d",a[i]);
   printf("\n");
 }
 

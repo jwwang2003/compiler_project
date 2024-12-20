@@ -6,98 +6,123 @@ declare void @putarray( i32, i32* )
 declare void @_sysy_starttime( i32 )
 declare void @_sysy_stoptime( i32 )
 define i32 @mod( i32 %r100, i32 %r102 ) {
-bb14:
-  %r146 = add i32 0, 0
-  %r148 = add i32 %r100, 0
-  %r147 = add i32 0, 0
-  %r149 = add i32 %r102, 0
-  br label %bb1
-
-bb1:
-  %r107 = sdiv i32 %r148, %r149
-  %r109 = mul i32 %r107, %r149
-  %r110 = sub i32 %r148, %r109
-  ret i32 %r110
+mod:
+  %r154 = add i32 0, 0
+  %r155 = add i32 %r100, 0
+  %r156 = add i32 0, 0
+  %r157 = add i32 %r102, 0
+  %r158 = sdiv i32 %r155, %r157
+  %r159 = mul i32 %r158, %r157
+  %r160 = sub i32 %r155, %r159
+  ret i32 %r160
 }
 
 define i32 @palindrome( i32 %r111 ) {
-bb15:
-  %r150 = add i32 0, 0
-  %r151 = add i32 0, 0
+palindrome:
+  %r166 = add i32 0, 0
+  %r167 = add i32 0, 0
+  %r168 = add i32 0, 0
+  %r169 = add i32 %r111, 0
   %r113 = alloca [ 4 x i32 ]
-  %r152 = add i32 0, 0
-  %r153 = add i32 %r111, 0
-  br label %bb2
+  %r170 = add i32 0, 0
+  %r171 = add i32 0, 0
+  %r172 = add i32 0, 0
+  br label %bb1
+
+bb1:
+  %r173 = phi i32 [ %r172, %palindrome ], [ %r197, %bb2 ]
+  %r174 = phi i32 [ %r169, %palindrome ], [ %r195, %bb2 ]
+  %r175 = icmp slt i32 %r173, 4
+  br i1 %r175, label %bb2, label %bb3
 
 bb2:
-  %r154 = add i32 0, 0
-  br label %bb3
+  %r118 = getelementptr [4 x i32 ], [4 x i32 ]* %r113, i32 0, i32 %r173
+  %r193 = call i32 @mod(i32 %r174, i32 10)
+  store i32 %r193, i32* %r118
+  %r194 = sdiv i32 %r174, 10
+  %r195 = add i32 %r194, 0
+  %r196 = add i32 %r173, 1
+  %r197 = add i32 %r196, 0
+  br label %bb1
 
 bb3:
-  %r155 = phi i32 [ %r153, %bb2 ], [ %r160, %bb4 ]
-  %r156 = phi i32 [ %r154, %bb2 ], [ %r161, %bb4 ]
-  %r117 = icmp slt i32 %r156, 4
-  br i1 %r117, label %bb4, label %bb5
-
-bb4:
-  %r119 = call i32 @mod(i32 %r155, i32 10)
-  %r121 = getelementptr [4 x i32 ], [4 x i32 ]* %r113, i32 0, i32 %r156
-  store i32 %r119, i32* %r121
-  %r160 = sdiv i32 %r155, 10
-  %r161 = add i32 %r156, 1
-  br label %bb3
-
-bb5:
-  %r126 = getelementptr [4 x i32 ], [4 x i32 ]* %r113, i32 0, i32 0
-  %r127 = load i32, i32* %r126
-  %r128 = getelementptr [4 x i32 ], [4 x i32 ]* %r113, i32 0, i32 3
-  %r129 = load i32, i32* %r128
-  %r130 = icmp eq i32 %r127, %r129
-  br i1 %r130, label %bb9, label %bb7
-
-bb9:
-  %r131 = getelementptr [4 x i32 ], [4 x i32 ]* %r113, i32 0, i32 1
-  %r132 = load i32, i32* %r131
-  %r133 = getelementptr [4 x i32 ], [4 x i32 ]* %r113, i32 0, i32 2
-  %r134 = load i32, i32* %r133
-  %r135 = icmp eq i32 %r132, %r134
-  br i1 %r135, label %bb6, label %bb7
-
-bb6:
-  %r159 = add i32 1, 0
-  br label %bb8
+  %r128 = getelementptr [4 x i32 ], [4 x i32 ]* %r113, i32 0, i32 0
+  %r176 = load i32, i32* %r128
+  %r130 = getelementptr [4 x i32 ], [4 x i32 ]* %r113, i32 0, i32 3
+  %r177 = load i32, i32* %r130
+  %r178 = icmp eq i32 %r176, %r177
+  br i1 %r178, label %bb7, label %bb8
 
 bb7:
-  %r158 = add i32 0, 0
-  br label %bb8
+  %r192 = add i32 1, 0
+  br label %bb9
 
 bb8:
-  %r157 = phi i32 [ %r159, %bb6 ], [ %r158, %bb7 ]
-  ret i32 %r157
-}
+  %r191 = add i32 0, 0
+  br label %bb9
 
-define i32 @main( ) {
+bb9:
+  %r179 = phi i32 [ %r192, %bb7 ], [ %r191, %bb8 ]
+  %r180 = icmp ne i32 %r179, 0
+  br i1 %r180, label %bb10, label %bb5
+
 bb10:
-  call void @_sysy_starttime(i32 30)
-  %r162 = add i32 0, 0
-  %r164 = add i32 1221, 0
-  %r163 = add i32 0, 0
-  %r165 = call i32 @palindrome(i32 %r164)
-  %r142 = icmp eq i32 %r165, 1
-  br i1 %r142, label %bb11, label %bb12
+  %r136 = getelementptr [4 x i32 ], [4 x i32 ]* %r113, i32 0, i32 1
+  %r183 = load i32, i32* %r136
+  %r138 = getelementptr [4 x i32 ], [4 x i32 ]* %r113, i32 0, i32 2
+  %r184 = load i32, i32* %r138
+  %r185 = icmp eq i32 %r183, %r184
+  br i1 %r185, label %bb11, label %bb12
 
 bb11:
-  call void @putint(i32 %r164)
+  %r190 = add i32 1, 0
   br label %bb13
 
 bb12:
-  %r167 = add i32 0, 0
-  call void @putint(i32 %r167)
+  %r189 = add i32 0, 0
   br label %bb13
 
 bb13:
-  %r166 = add i32 10, 0
-  call void @putch(i32 %r166)
+  %r186 = phi i32 [ %r190, %bb11 ], [ %r189, %bb12 ]
+  %r187 = icmp ne i32 %r186, 0
+  br i1 %r187, label %bb4, label %bb5
+
+bb4:
+  %r188 = add i32 1, 0
+  br label %bb6
+
+bb5:
+  %r181 = add i32 0, 0
+  br label %bb6
+
+bb6:
+  %r182 = phi i32 [ %r188, %bb4 ], [ %r181, %bb5 ]
+  ret i32 %r182
+}
+
+define i32 @main( ) {
+main:
+  call void @_sysy_starttime(i32 30)
+  %r200 = add i32 0, 0
+  %r201 = add i32 1221, 0
+  %r202 = add i32 0, 0
+  %r203 = call i32 @palindrome(i32 %r201)
+  %r204 = add i32 %r203, 0
+  %r205 = icmp eq i32 %r204, 1
+  br i1 %r205, label %bb14, label %bb15
+
+bb14:
+  call void @putint(i32 %r201)
+  br label %bb16
+
+bb15:
+  %r207 = add i32 0, 0
+  call void @putint(i32 %r207)
+  br label %bb16
+
+bb16:
+  %r206 = add i32 10, 0
+  call void @putch(i32 %r206)
   call void @_sysy_stoptime(i32 47)
   ret i32 0
 }

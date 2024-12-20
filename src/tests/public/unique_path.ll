@@ -6,123 +6,157 @@ declare void @putarray( i32, i32* )
 declare void @_sysy_starttime( i32 )
 declare void @_sysy_stoptime( i32 )
 define i32 @uniquePaths( i32 %r100, i32 %r102 ) {
-bb19:
-  %r181 = add i32 0, 0
-  %r182 = add i32 0, 0
-  %r183 = add i32 0, 0
-  %r184 = add i32 0, 0
-  %r185 = add i32 0, 0
-  %r108 = alloca [ 9 x i32 ]
-  %r186 = add i32 0, 0
-  %r188 = add i32 %r100, 0
-  %r187 = add i32 0, 0
-  %r189 = add i32 %r102, 0
-  br label %bb1
-
-bb1:
-  %r105 = icmp eq i32 %r188, 1
-  br i1 %r105, label %bb2, label %bb5
-
-bb5:
-  %r107 = icmp eq i32 %r189, 1
-  br i1 %r107, label %bb2, label %bb3
-
-bb2:
-  ret i32 1
-bb3:
-  br label %bb4
+uniquePaths:
+  %r196 = add i32 0, 0
+  %r197 = add i32 0, 0
+  %r198 = add i32 0, 0
+  %r199 = add i32 0, 0
+  %r200 = add i32 0, 0
+  %r114 = alloca [ 9 x i32 ]
+  %r201 = add i32 0, 0
+  %r202 = add i32 0, 0
+  %r203 = add i32 %r100, 0
+  %r204 = add i32 0, 0
+  %r205 = add i32 %r102, 0
+  %r206 = add i32 0, 0
+  %r207 = icmp eq i32 %r203, 1
+  br i1 %r207, label %bb4, label %bb5
 
 bb4:
-  %r190 = add i32 0, 0
+  %r261 = add i32 1, 0
+  br label %bb6
+
+bb5:
+  %r260 = add i32 0, 0
   br label %bb6
 
 bb6:
-  %r191 = phi i32 [ %r190, %bb4 ], [ %r206, %bb7 ]
-  %r116 = icmp slt i32 %r191, %r188
-  br i1 %r116, label %bb7, label %bb8
+  %r208 = phi i32 [ %r261, %bb4 ], [ %r260, %bb5 ]
+  %r209 = icmp ne i32 %r208, 0
+  br i1 %r209, label %bb1, label %bb7
 
 bb7:
-  %r118 = mul i32 %r191, 3
-  %r120 = add i32 %r118, %r189
-  %r205 = sub i32 %r120, 1
-  %r123 = getelementptr [9 x i32 ], [9 x i32 ]* %r108, i32 0, i32 %r205
-  store i32 1, i32* %r123
-  %r206 = add i32 %r191, 1
-  br label %bb6
+  %r210 = icmp eq i32 %r205, 1
+  br i1 %r210, label %bb8, label %bb9
 
 bb8:
-  %r192 = add i32 0, 0
-  br label %bb9
+  %r259 = add i32 1, 0
+  br label %bb10
 
 bb9:
-  %r193 = phi i32 [ %r192, %bb8 ], [ %r204, %bb10 ]
-  %r128 = icmp slt i32 %r193, %r189
-  br i1 %r128, label %bb10, label %bb11
+  %r258 = add i32 0, 0
+  br label %bb10
 
 bb10:
-  %r130 = sub i32 %r188, 1
-  %r131 = mul i32 %r130, 3
-  %r203 = add i32 %r131, %r193
-  %r135 = getelementptr [9 x i32 ], [9 x i32 ]* %r108, i32 0, i32 %r203
-  store i32 1, i32* %r135
-  %r204 = add i32 %r193, 1
-  br label %bb9
+  %r211 = phi i32 [ %r259, %bb8 ], [ %r258, %bb9 ]
+  %r212 = icmp ne i32 %r211, 0
+  br i1 %r212, label %bb1, label %bb3
+
+bb1:
+  ret i32 1
+bb3:
+  %r213 = add i32 0, 0
+  br label %bb11
 
 bb11:
-  %r194 = sub i32 %r188, 2
-  br label %bb12
+  %r214 = phi i32 [ %r213, %bb3 ], [ %r257, %bb12 ]
+  %r215 = icmp slt i32 %r214, %r203
+  br i1 %r215, label %bb12, label %bb13
 
 bb12:
-  %r195 = phi i32 [ %r194, %bb11 ], [ %r198, %bb17 ]
-  %r141 = icmp sgt i32 %r195, -1
-  br i1 %r141, label %bb13, label %bb14
+  %r252 = mul i32 %r214, 3
+  %r253 = add i32 %r252, %r205
+  %r254 = sub i32 %r253, 1
+  %r255 = add i32 %r254, 0
+  %r128 = getelementptr [9 x i32 ], [9 x i32 ]* %r114, i32 0, i32 %r255
+  store i32 1, i32* %r128
+  %r256 = add i32 %r214, 1
+  %r257 = add i32 %r256, 0
+  br label %bb11
 
 bb13:
-  %r196 = sub i32 %r189, 2
-  br label %bb15
-
-bb15:
-  %r197 = phi i32 [ %r196, %bb13 ], [ %r202, %bb16 ]
-  %r145 = icmp sgt i32 %r197, -1
-  br i1 %r145, label %bb16, label %bb17
-
-bb16:
-  %r147 = mul i32 %r195, 3
-  %r199 = add i32 %r147, %r197
-  %r151 = add i32 %r195, 1
-  %r152 = mul i32 %r151, 3
-  %r200 = add i32 %r152, %r197
-  %r156 = mul i32 %r195, 3
-  %r158 = add i32 %r156, %r197
-  %r201 = add i32 %r158, 1
-  %r161 = getelementptr [9 x i32 ], [9 x i32 ]* %r108, i32 0, i32 %r200
-  %r162 = load i32, i32* %r161
-  %r164 = getelementptr [9 x i32 ], [9 x i32 ]* %r108, i32 0, i32 %r201
-  %r165 = load i32, i32* %r164
-  %r166 = add i32 %r162, %r165
-  %r168 = getelementptr [9 x i32 ], [9 x i32 ]* %r108, i32 0, i32 %r199
-  store i32 %r166, i32* %r168
-  %r202 = sub i32 %r197, 1
-  br label %bb15
-
-bb17:
-  %r198 = sub i32 %r195, 1
-  br label %bb12
+  %r216 = add i32 0, 0
+  br label %bb14
 
 bb14:
-  %r173 = getelementptr [9 x i32 ], [9 x i32 ]* %r108, i32 0, i32 0
-  %r174 = load i32, i32* %r173
-  ret i32 %r174
+  %r217 = phi i32 [ %r216, %bb13 ], [ %r251, %bb15 ]
+  %r218 = icmp slt i32 %r217, %r205
+  br i1 %r218, label %bb15, label %bb16
+
+bb15:
+  %r246 = sub i32 %r203, 1
+  %r247 = mul i32 %r246, 3
+  %r248 = add i32 %r247, %r217
+  %r249 = add i32 %r248, 0
+  %r140 = getelementptr [9 x i32 ], [9 x i32 ]* %r114, i32 0, i32 %r249
+  store i32 1, i32* %r140
+  %r250 = add i32 %r217, 1
+  %r251 = add i32 %r250, 0
+  br label %bb14
+
+bb16:
+  %r219 = sub i32 %r203, 2
+  %r220 = add i32 %r219, 0
+  br label %bb17
+
+bb17:
+  %r221 = phi i32 [ %r220, %bb16 ], [ %r229, %bb22 ]
+  %r222 = icmp sgt i32 %r221, -1
+  br i1 %r222, label %bb18, label %bb19
+
+bb18:
+  %r224 = sub i32 %r205, 2
+  %r225 = add i32 %r224, 0
+  br label %bb20
+
+bb20:
+  %r226 = phi i32 [ %r225, %bb18 ], [ %r245, %bb21 ]
+  %r227 = icmp sgt i32 %r226, -1
+  br i1 %r227, label %bb21, label %bb22
+
+bb21:
+  %r230 = mul i32 %r221, 3
+  %r231 = add i32 %r230, %r226
+  %r232 = add i32 %r231, 0
+  %r233 = add i32 %r221, 1
+  %r234 = mul i32 %r233, 3
+  %r235 = add i32 %r234, %r226
+  %r236 = add i32 %r235, 0
+  %r237 = mul i32 %r221, 3
+  %r238 = add i32 %r237, %r226
+  %r239 = add i32 %r238, 1
+  %r240 = add i32 %r239, 0
+  %r166 = getelementptr [9 x i32 ], [9 x i32 ]* %r114, i32 0, i32 %r232
+  %r168 = getelementptr [9 x i32 ], [9 x i32 ]* %r114, i32 0, i32 %r236
+  %r170 = getelementptr [9 x i32 ], [9 x i32 ]* %r114, i32 0, i32 %r240
+  %r241 = load i32, i32* %r168
+  %r242 = load i32, i32* %r170
+  %r243 = add i32 %r241, %r242
+  store i32 %r243, i32* %r166
+  %r244 = sub i32 %r226, 1
+  %r245 = add i32 %r244, 0
+  br label %bb20
+
+bb22:
+  %r228 = sub i32 %r221, 1
+  %r229 = add i32 %r228, 0
+  br label %bb17
+
+bb19:
+  %r179 = getelementptr [9 x i32 ], [9 x i32 ]* %r114, i32 0, i32 0
+  %r223 = load i32, i32* %r179
+  ret i32 %r223
 }
 
 define i32 @main( ) {
-bb18:
+main:
   call void @_sysy_starttime(i32 40)
-  %r207 = add i32 0, 0
-  %r208 = add i32 0, 0
-  %r209 = add i32 3, 0
-  %r210 = call i32 @uniquePaths(i32 %r209, i32 %r209)
+  %r264 = add i32 0, 0
+  %r265 = add i32 0, 0
+  %r266 = add i32 3, 0
+  %r267 = call i32 @uniquePaths(i32 %r266, i32 %r266)
+  %r268 = add i32 %r267, 0
   call void @_sysy_stoptime(i32 45)
-  ret i32 %r210
+  ret i32 %r268
 }
 

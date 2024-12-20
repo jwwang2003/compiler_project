@@ -25,9 +25,9 @@ test_single() {
         return
     fi
 
-	aarch64-linux-gnu-gcc -c sylib.c -o sylib/sylib.o
-	aarch64-linux-gnu-gcc -c $func_testcase_dir/$test_name.S -o output/$test_name.o --static
-    aarch64-linux-gnu-gcc output/$test_name.o sylib/sylib.o -o output/$test_name --static
+	aarch64-linux-gnu-gcc -c sylib.c -o sylib/sylib.o -g
+	aarch64-linux-gnu-gcc -c $func_testcase_dir/$test_name.S -o output/$test_name.o --static -g
+    aarch64-linux-gnu-gcc output/$test_name.o sylib/sylib.o -o output/$test_name --static -g
     if [ $? != 0 ]; then
         echo "fail to compile"
         failed_tests=$((failed_tests + 1))

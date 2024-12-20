@@ -12,114 +12,164 @@ declare void @_sysy_stoptime( i32 )
 @other = global i32 0
 @cur_token = global i32 0
 define i32 @next_char( ) {
-bb1:
-  %r100 = call i32 @getch()
-  store i32 %r100, i32* @last_char
-  %r101 = load i32, i32* @last_char
-  ret i32 %r101
+next_char:
+  %r350 = call i32 @getch()
+  store i32 %r350, i32* @last_char
+  %r351 = load i32, i32* @last_char
+  ret i32 %r351
 }
 
 define i32 @is_space( i32 %r102 ) {
-bb81:
-  %r291 = add i32 0, 0
-  %r292 = add i32 %r102, 0
-  br label %bb2
+is_space:
+  %r355 = add i32 0, 0
+  %r356 = add i32 0, 0
+  %r357 = add i32 %r102, 0
+  %r358 = add i32 0, 0
+  %r359 = icmp eq i32 %r357, 32
+  br i1 %r359, label %bb4, label %bb5
 
-bb2:
-  %r105 = icmp eq i32 %r292, 32
-  br i1 %r105, label %bb3, label %bb6
+bb4:
+  %r368 = add i32 1, 0
+  br label %bb6
+
+bb5:
+  %r367 = add i32 0, 0
+  br label %bb6
 
 bb6:
-  %r107 = icmp eq i32 %r292, 10
-  br i1 %r107, label %bb3, label %bb4
+  %r360 = phi i32 [ %r368, %bb4 ], [ %r367, %bb5 ]
+  %r361 = icmp ne i32 %r360, 0
+  br i1 %r361, label %bb1, label %bb7
 
-bb3:
+bb7:
+  %r362 = icmp eq i32 %r357, 10
+  br i1 %r362, label %bb8, label %bb9
+
+bb8:
+  %r366 = add i32 1, 0
+  br label %bb10
+
+bb9:
+  %r365 = add i32 0, 0
+  br label %bb10
+
+bb10:
+  %r363 = phi i32 [ %r366, %bb8 ], [ %r365, %bb9 ]
+  %r364 = icmp ne i32 %r363, 0
+  br i1 %r364, label %bb1, label %bb2
+
+bb1:
   ret i32 1
-bb4:
+bb2:
   ret i32 0
 }
 
-define i32 @is_num( i32 %r108 ) {
-bb84:
-  %r293 = add i32 0, 0
-  %r294 = add i32 %r108, 0
-  br label %bb7
+define i32 @is_num( i32 %r114 ) {
+is_num:
+  %r372 = add i32 0, 0
+  %r373 = add i32 0, 0
+  %r374 = add i32 %r114, 0
+  %r375 = add i32 0, 0
+  %r376 = icmp sge i32 %r374, 48
+  br i1 %r376, label %bb14, label %bb15
 
-bb7:
-  %r111 = icmp sge i32 %r294, 48
-  br i1 %r111, label %bb11, label %bb9
+bb14:
+  %r385 = add i32 1, 0
+  br label %bb16
+
+bb15:
+  %r384 = add i32 0, 0
+  br label %bb16
+
+bb16:
+  %r377 = phi i32 [ %r385, %bb14 ], [ %r384, %bb15 ]
+  %r378 = icmp ne i32 %r377, 0
+  br i1 %r378, label %bb17, label %bb12
+
+bb17:
+  %r379 = icmp sle i32 %r374, 57
+  br i1 %r379, label %bb18, label %bb19
+
+bb18:
+  %r383 = add i32 1, 0
+  br label %bb20
+
+bb19:
+  %r382 = add i32 0, 0
+  br label %bb20
+
+bb20:
+  %r380 = phi i32 [ %r383, %bb18 ], [ %r382, %bb19 ]
+  %r381 = icmp ne i32 %r380, 0
+  br i1 %r381, label %bb11, label %bb12
 
 bb11:
-  %r113 = icmp sle i32 %r294, 57
-  br i1 %r113, label %bb8, label %bb9
-
-bb8:
   ret i32 1
-bb9:
+bb12:
   ret i32 0
 }
 
 define i32 @next_token( ) {
-bb12:
-  br label %bb13
-
-bb13:
-  %r114 = load i32, i32* @last_char
-  %r115 = call i32 @is_space(i32 %r114)
-  %r116 = icmp ne i32 %r115, 0
-  br i1 %r116, label %bb14, label %bb15
-
-bb14:
-  call void @next_char()
-  br label %bb13
-
-bb15:
-  %r117 = load i32, i32* @last_char
-  %r118 = call i32 @is_num(i32 %r117)
-  %r119 = icmp ne i32 %r118, 0
-  br i1 %r119, label %bb16, label %bb17
-
-bb16:
-  %r120 = load i32, i32* @last_char
-  %r121 = sub i32 %r120, 48
-  store i32 %r121, i32* @num
-  br label %bb19
-
-bb19:
-  %r122 = call i32 @next_char()
-  %r123 = call i32 @is_num(i32 %r122)
-  %r124 = icmp ne i32 %r123, 0
-  br i1 %r124, label %bb20, label %bb21
-
-bb20:
-  %r125 = load i32, i32* @num
-  %r126 = mul i32 %r125, 10
-  %r127 = load i32, i32* @last_char
-  %r128 = add i32 %r126, %r127
-  %r129 = sub i32 %r128, 48
-  store i32 %r129, i32* @num
-  br label %bb19
+next_token:
+  br label %bb21
 
 bb21:
-  %r130 = load i32, i32* @TOKEN_NUM
-  store i32 %r130, i32* @cur_token
-  br label %bb18
+  %r386 = load i32, i32* @last_char
+  %r387 = call i32 @is_space(i32 %r386)
+  %r388 = icmp ne i32 %r387, 0
+  br i1 %r388, label %bb22, label %bb23
 
-bb17:
-  %r131 = load i32, i32* @last_char
-  store i32 %r131, i32* @other
-  call void @next_char()
-  %r132 = load i32, i32* @TOKEN_OTHER
-  store i32 %r132, i32* @cur_token
-  br label %bb18
+bb22:
+  %r407 = call i32 @next_char()
+  br label %bb21
 
-bb18:
-  %r133 = load i32, i32* @cur_token
-  ret i32 %r133
+bb23:
+  %r389 = load i32, i32* @last_char
+  %r390 = call i32 @is_num(i32 %r389)
+  %r391 = icmp ne i32 %r390, 0
+  br i1 %r391, label %bb24, label %bb25
+
+bb24:
+  %r396 = load i32, i32* @last_char
+  %r397 = sub i32 %r396, 48
+  store i32 %r397, i32* @num
+  br label %bb27
+
+bb27:
+  %r398 = call i32 @next_char()
+  %r399 = call i32 @is_num(i32 %r398)
+  %r400 = icmp ne i32 %r399, 0
+  br i1 %r400, label %bb28, label %bb29
+
+bb28:
+  %r402 = load i32, i32* @num
+  %r403 = mul i32 %r402, 10
+  %r404 = load i32, i32* @last_char
+  %r405 = add i32 %r403, %r404
+  %r406 = sub i32 %r405, 48
+  store i32 %r406, i32* @num
+  br label %bb27
+
+bb29:
+  %r401 = load i32, i32* @TOKEN_NUM
+  store i32 %r401, i32* @cur_token
+  br label %bb26
+
+bb25:
+  %r393 = load i32, i32* @last_char
+  store i32 %r393, i32* @other
+  %r394 = call i32 @next_char()
+  %r395 = load i32, i32* @TOKEN_OTHER
+  store i32 %r395, i32* @cur_token
+  br label %bb26
+
+bb26:
+  %r392 = load i32, i32* @cur_token
+  ret i32 %r392
 }
 
 define i32 @panic( ) {
-bb22:
+panic:
   call void @putch(i32 112)
   call void @putch(i32 97)
   call void @putch(i32 110)
@@ -130,329 +180,425 @@ bb22:
   ret i32 -1
 }
 
-define i32 @get_op_prec( i32 %r134 ) {
-bb87:
-  %r295 = add i32 0, 0
-  %r296 = add i32 %r134, 0
-  br label %bb23
+define i32 @get_op_prec( i32 %r148 ) {
+get_op_prec:
+  %r415 = add i32 0, 0
+  %r416 = add i32 0, 0
+  %r417 = add i32 0, 0
+  %r418 = add i32 0, 0
+  %r419 = add i32 0, 0
+  %r420 = add i32 0, 0
+  %r421 = add i32 %r148, 0
+  %r422 = add i32 0, 0
+  %r423 = icmp eq i32 %r421, 43
+  br i1 %r423, label %bb33, label %bb34
 
-bb23:
-  %r137 = icmp eq i32 %r296, 43
-  br i1 %r137, label %bb24, label %bb27
+bb33:
+  %r451 = add i32 1, 0
+  br label %bb35
 
-bb27:
-  %r139 = icmp eq i32 %r296, 45
-  br i1 %r139, label %bb24, label %bb25
+bb34:
+  %r450 = add i32 0, 0
+  br label %bb35
 
-bb24:
-  ret i32 10
-bb25:
-  br label %bb26
+bb35:
+  %r424 = phi i32 [ %r451, %bb33 ], [ %r450, %bb34 ]
+  %r425 = icmp ne i32 %r424, 0
+  br i1 %r425, label %bb30, label %bb36
 
-bb26:
-  %r141 = icmp eq i32 %r296, 42
-  br i1 %r141, label %bb28, label %bb32
+bb36:
+  %r426 = icmp eq i32 %r421, 45
+  br i1 %r426, label %bb37, label %bb38
 
-bb32:
-  %r143 = icmp eq i32 %r296, 47
-  br i1 %r143, label %bb28, label %bb31
+bb37:
+  %r449 = add i32 1, 0
+  br label %bb39
 
-bb31:
-  %r145 = icmp eq i32 %r296, 37
-  br i1 %r145, label %bb28, label %bb29
+bb38:
+  %r448 = add i32 0, 0
+  br label %bb39
 
-bb28:
-  ret i32 20
-bb29:
-  br label %bb30
+bb39:
+  %r427 = phi i32 [ %r449, %bb37 ], [ %r448, %bb38 ]
+  %r428 = icmp ne i32 %r427, 0
+  br i1 %r428, label %bb30, label %bb32
 
 bb30:
+  ret i32 10
+bb32:
+  %r429 = icmp eq i32 %r421, 42
+  br i1 %r429, label %bb46, label %bb47
+
+bb46:
+  %r447 = add i32 1, 0
+  br label %bb48
+
+bb47:
+  %r446 = add i32 0, 0
+  br label %bb48
+
+bb48:
+  %r430 = phi i32 [ %r447, %bb46 ], [ %r446, %bb47 ]
+  %r431 = icmp ne i32 %r430, 0
+  br i1 %r431, label %bb43, label %bb49
+
+bb49:
+  %r440 = icmp eq i32 %r421, 47
+  br i1 %r440, label %bb50, label %bb51
+
+bb50:
+  %r445 = add i32 1, 0
+  br label %bb52
+
+bb51:
+  %r444 = add i32 0, 0
+  br label %bb52
+
+bb52:
+  %r441 = phi i32 [ %r445, %bb50 ], [ %r444, %bb51 ]
+  %r442 = icmp ne i32 %r441, 0
+  br i1 %r442, label %bb43, label %bb44
+
+bb43:
+  %r439 = add i32 1, 0
+  br label %bb45
+
+bb44:
+  %r443 = add i32 0, 0
+  br label %bb45
+
+bb45:
+  %r432 = phi i32 [ %r439, %bb43 ], [ %r443, %bb44 ]
+  %r433 = icmp ne i32 %r432, 0
+  br i1 %r433, label %bb40, label %bb53
+
+bb53:
+  %r434 = icmp eq i32 %r421, 37
+  br i1 %r434, label %bb54, label %bb55
+
+bb54:
+  %r438 = add i32 1, 0
+  br label %bb56
+
+bb55:
+  %r437 = add i32 0, 0
+  br label %bb56
+
+bb56:
+  %r435 = phi i32 [ %r438, %bb54 ], [ %r437, %bb55 ]
+  %r436 = icmp ne i32 %r435, 0
+  br i1 %r436, label %bb40, label %bb42
+
+bb40:
+  ret i32 20
+bb42:
   ret i32 0
 }
 
-define void @stack_push( i32* %r146, i32 %r147 ) {
-bb90:
-  %r297 = add i32 0, 0
-  %r298 = add i32 0, 0
-  %r299 = add i32 %r147, 0
-  br label %bb33
-
-bb33:
-  %r149 = getelementptr i32, i32* %r146, i32 0
-  %r150 = load i32, i32* %r149
-  %r151 = add i32 %r150, 1
-  %r152 = getelementptr i32, i32* %r146, i32 0
-  store i32 %r151, i32* %r152
-  %r154 = getelementptr i32, i32* %r146, i32 0
-  %r300 = load i32, i32* %r154
-  %r158 = getelementptr i32, i32* %r146, i32 %r300
-  store i32 %r299, i32* %r158
+define void @stack_push( i32* %r178, i32 %r179 ) {
+stack_push:
+  %r454 = add i32 0, 0
+  %r455 = add i32 %r179, 0
+  %r181 = getelementptr i32, i32* %r178, i32 0
+  %r182 = getelementptr i32, i32* %r178, i32 0
+  %r456 = load i32, i32* %r182
+  %r457 = add i32 %r456, 1
+  store i32 %r457, i32* %r181
+  %r185 = getelementptr i32, i32* %r178, i32 0
+  %r458 = load i32, i32* %r185
+  %r459 = add i32 0, 0
+  %r460 = add i32 %r458, 0
+  %r188 = getelementptr i32, i32* %r178, i32 %r460
+  store i32 %r455, i32* %r188
   ret void
 }
 
-define i32 @stack_pop( i32* %r159 ) {
-bb34:
-  %r301 = add i32 0, 0
-  %r161 = getelementptr i32, i32* %r159, i32 0
-  %r303 = load i32, i32* %r161
-  %r302 = add i32 0, 0
-  %r165 = getelementptr i32, i32* %r159, i32 %r303
-  %r304 = load i32, i32* %r165
-  %r167 = getelementptr i32, i32* %r159, i32 0
-  %r168 = load i32, i32* %r167
-  %r169 = sub i32 %r168, 1
-  %r170 = getelementptr i32, i32* %r159, i32 0
-  store i32 %r169, i32* %r170
-  ret i32 %r304
+define i32 @stack_pop( i32* %r191 ) {
+stack_pop:
+  %r192 = getelementptr i32, i32* %r191, i32 0
+  %r463 = load i32, i32* %r192
+  %r464 = add i32 0, 0
+  %r465 = add i32 %r463, 0
+  %r195 = getelementptr i32, i32* %r191, i32 %r465
+  %r466 = load i32, i32* %r195
+  %r467 = add i32 0, 0
+  %r468 = add i32 %r466, 0
+  %r199 = getelementptr i32, i32* %r191, i32 0
+  %r200 = getelementptr i32, i32* %r191, i32 0
+  %r469 = load i32, i32* %r200
+  %r470 = sub i32 %r469, 1
+  store i32 %r470, i32* %r199
+  ret i32 %r468
 }
 
-define i32 @stack_peek( i32* %r172 ) {
-bb35:
-  %r305 = add i32 0, 0
-  %r174 = getelementptr i32, i32* %r172, i32 0
-  %r306 = load i32, i32* %r174
-  %r177 = getelementptr i32, i32* %r172, i32 %r306
-  %r178 = load i32, i32* %r177
-  ret i32 %r178
+define i32 @stack_peek( i32* %r204 ) {
+stack_peek:
+  %r205 = getelementptr i32, i32* %r204, i32 0
+  %r472 = load i32, i32* %r205
+  %r473 = add i32 0, 0
+  %r474 = add i32 %r472, 0
+  %r208 = getelementptr i32, i32* %r204, i32 %r474
+  %r475 = load i32, i32* %r208
+  ret i32 %r475
 }
 
-define i32 @stack_size( i32* %r179 ) {
-bb36:
-  %r180 = getelementptr i32, i32* %r179, i32 0
-  %r181 = load i32, i32* %r180
-  ret i32 %r181
+define i32 @stack_size( i32* %r211 ) {
+stack_size:
+  %r212 = getelementptr i32, i32* %r211, i32 0
+  %r476 = load i32, i32* %r212
+  ret i32 %r476
 }
 
-define i32 @mod( i32 %r182, i32 %r184 ) {
-bb91:
-  %r307 = add i32 0, 0
-  %r309 = add i32 %r182, 0
-  %r308 = add i32 0, 0
-  %r310 = add i32 %r184, 0
-  br label %bb37
-
-bb37:
-  %r189 = sdiv i32 %r309, %r310
-  %r191 = mul i32 %r189, %r310
-  %r192 = sub i32 %r309, %r191
-  ret i32 %r192
+define i32 @mod( i32 %r214, i32 %r216 ) {
+mod:
+  %r479 = add i32 0, 0
+  %r480 = add i32 %r214, 0
+  %r481 = add i32 0, 0
+  %r482 = add i32 %r216, 0
+  %r483 = sdiv i32 %r480, %r482
+  %r484 = mul i32 %r483, %r482
+  %r485 = sub i32 %r480, %r484
+  ret i32 %r485
 }
 
-define i32 @eval_op( i32 %r193, i32 %r195, i32 %r197 ) {
-bb92:
-  %r311 = add i32 0, 0
-  %r314 = add i32 %r193, 0
-  %r312 = add i32 0, 0
-  %r315 = add i32 %r195, 0
-  %r313 = add i32 0, 0
-  %r316 = add i32 %r197, 0
-  br label %bb38
+define i32 @eval_op( i32 %r225, i32 %r227, i32 %r229 ) {
+eval_op:
+  %r489 = add i32 0, 0
+  %r490 = add i32 %r225, 0
+  %r491 = add i32 0, 0
+  %r492 = add i32 %r227, 0
+  %r493 = add i32 0, 0
+  %r494 = add i32 %r229, 0
+  %r495 = icmp eq i32 %r490, 43
+  br i1 %r495, label %bb57, label %bb59
 
-bb38:
-  %r200 = icmp eq i32 %r314, 43
-  br i1 %r200, label %bb39, label %bb40
+bb57:
+  %r504 = add i32 %r492, %r494
+  ret i32 %r504
+bb59:
+  %r496 = icmp eq i32 %r490, 45
+  br i1 %r496, label %bb60, label %bb62
 
-bb39:
-  %r203 = add i32 %r315, %r316
-  ret i32 %r203
-bb40:
-  br label %bb41
+bb60:
+  %r503 = sub i32 %r492, %r494
+  ret i32 %r503
+bb62:
+  %r497 = icmp eq i32 %r490, 42
+  br i1 %r497, label %bb63, label %bb65
 
-bb41:
-  %r205 = icmp eq i32 %r314, 45
-  br i1 %r205, label %bb42, label %bb43
+bb63:
+  %r502 = mul i32 %r492, %r494
+  ret i32 %r502
+bb65:
+  %r498 = icmp eq i32 %r490, 47
+  br i1 %r498, label %bb66, label %bb68
 
-bb42:
-  %r208 = sub i32 %r315, %r316
-  ret i32 %r208
-bb43:
-  br label %bb44
+bb66:
+  %r501 = sdiv i32 %r492, %r494
+  ret i32 %r501
+bb68:
+  %r499 = icmp eq i32 %r490, 37
+  br i1 %r499, label %bb69, label %bb71
 
-bb44:
-  %r210 = icmp eq i32 %r314, 42
-  br i1 %r210, label %bb45, label %bb46
-
-bb45:
-  %r213 = mul i32 %r315, %r316
-  ret i32 %r213
-bb46:
-  br label %bb47
-
-bb47:
-  %r215 = icmp eq i32 %r314, 47
-  br i1 %r215, label %bb48, label %bb49
-
-bb48:
-  %r218 = sdiv i32 %r315, %r316
-  ret i32 %r218
-bb49:
-  br label %bb50
-
-bb50:
-  %r220 = icmp eq i32 %r314, 37
-  br i1 %r220, label %bb51, label %bb52
-
-bb51:
-  %r223 = call i32 @mod(i32 %r315, i32 %r316)
-  ret i32 %r223
-bb52:
-  br label %bb53
-
-bb53:
+bb69:
+  %r500 = call i32 @mod(i32 %r492, i32 %r494)
+  ret i32 %r500
+bb71:
   ret i32 0
 }
 
 define i32 @eval( ) {
-bb54:
-  %r317 = add i32 0, 0
-  %r318 = add i32 0, 0
-  %r319 = add i32 0, 0
-  %r320 = add i32 0, 0
-  %r321 = add i32 0, 0
-  %r322 = add i32 0, 0
-  %r323 = add i32 0, 0
-  %r224 = alloca [ 256 x i32 ]
-  %r225 = alloca [ 256 x i32 ]
-  %r324 = add i32 0, 0
-  %r325 = add i32 0, 0
-  br label %bb55
+eval:
+  %r515 = add i32 0, 0
+  %r516 = add i32 0, 0
+  %r517 = add i32 0, 0
+  %r518 = add i32 0, 0
+  %r519 = add i32 0, 0
+  %r520 = add i32 0, 0
+  %r521 = add i32 0, 0
+  %r522 = add i32 0, 0
+  %r523 = add i32 0, 0
+  %r256 = alloca [ 256 x i32 ]
+  %r257 = alloca [ 256 x i32 ]
+  %r524 = add i32 0, 0
+  %r525 = add i32 0, 0
+  br label %bb72
 
-bb55:
-  %r326 = phi i32 [ %r325, %bb54 ], [ %r334, %bb56 ]
-  %r228 = icmp slt i32 %r326, 256
-  br i1 %r228, label %bb56, label %bb57
-
-bb56:
-  %r230 = getelementptr [256 x i32 ], [256 x i32 ]* %r224, i32 0, i32 %r326
-  store i32 0, i32* %r230
-  %r232 = getelementptr [256 x i32 ], [256 x i32 ]* %r225, i32 0, i32 %r326
-  store i32 0, i32* %r232
-  %r334 = add i32 %r326, 1
-  br label %bb55
-
-bb57:
-  %r235 = load i32, i32* @cur_token
-  %r236 = load i32, i32* @TOKEN_NUM
-  %r237 = icmp ne i32 %r235, %r236
-  br i1 %r237, label %bb58, label %bb59
-
-bb58:
-  %r238 = call i32 @panic()
-  ret i32 %r238
-bb59:
-  br label %bb60
-
-bb60:
-  %r239 = load i32, i32* @num
-  call void @stack_push(i32* %r224, i32 %r239)
-  call void @next_token()
-  br label %bb61
-
-bb61:
-  %r240 = load i32, i32* @cur_token
-  %r241 = load i32, i32* @TOKEN_OTHER
-  %r242 = icmp eq i32 %r240, %r241
-  br i1 %r242, label %bb62, label %bb63
-
-bb62:
-  %r330 = load i32, i32* @other
-  %r246 = call i32 @get_op_prec(i32 %r330)
-  %r247 = icmp eq i32 %r246, 0
-  br i1 %r247, label %bb64, label %bb65
-
-bb64:
-  br label %bb63
-
-bb65:
-  br label %bb66
-
-bb66:
-  call void @next_token()
-  br label %bb67
-
-bb67:
-  %r248 = call i32 @stack_size(i32* %r225)
-  %r249 = icmp ne i32 %r248, 0
-  br i1 %r249, label %bb70, label %bb69
-
-bb70:
-  %r250 = call i32 @stack_peek(i32* %r225)
-  %r251 = call i32 @get_op_prec(i32 %r250)
-  %r253 = call i32 @get_op_prec(i32 %r330)
-  %r254 = icmp sge i32 %r251, %r253
-  br i1 %r254, label %bb68, label %bb69
-
-bb68:
-  %r331 = call i32 @stack_pop(i32* %r225)
-  %r332 = call i32 @stack_pop(i32* %r224)
-  %r333 = call i32 @stack_pop(i32* %r224)
-  %r264 = call i32 @eval_op(i32 %r331, i32 %r333, i32 %r332)
-  call void @stack_push(i32* %r224, i32 %r264)
-  br label %bb67
-
-bb69:
-  call void @stack_push(i32* %r225, i32 %r330)
-  %r266 = load i32, i32* @cur_token
-  %r267 = load i32, i32* @TOKEN_NUM
-  %r268 = icmp ne i32 %r266, %r267
-  br i1 %r268, label %bb71, label %bb72
-
-bb71:
-  %r269 = call i32 @panic()
-  ret i32 %r269
 bb72:
-  br label %bb73
+  %r526 = phi i32 [ %r525, %eval ], [ %r581, %bb73 ]
+  %r527 = icmp slt i32 %r526, 256
+  br i1 %r527, label %bb73, label %bb74
 
 bb73:
-  %r270 = load i32, i32* @num
-  call void @stack_push(i32* %r224, i32 %r270)
-  call void @next_token()
-  br label %bb61
-
-bb63:
-  call void @next_token()
-  br label %bb74
+  %r261 = getelementptr [256 x i32 ], [256 x i32 ]* %r256, i32 0, i32 %r526
+  store i32 0, i32* %r261
+  %r263 = getelementptr [256 x i32 ], [256 x i32 ]* %r257, i32 0, i32 %r526
+  store i32 0, i32* %r263
+  %r580 = add i32 %r526, 1
+  %r581 = add i32 %r580, 0
+  br label %bb72
 
 bb74:
-  %r271 = call i32 @stack_size(i32* %r225)
-  %r272 = icmp ne i32 %r271, 0
-  br i1 %r272, label %bb75, label %bb76
+  %r528 = load i32, i32* @cur_token
+  %r529 = load i32, i32* @TOKEN_NUM
+  %r530 = icmp ne i32 %r528, %r529
+  br i1 %r530, label %bb75, label %bb77
 
 bb75:
-  %r327 = call i32 @stack_pop(i32* %r225)
-  %r328 = call i32 @stack_pop(i32* %r224)
-  %r329 = call i32 @stack_pop(i32* %r224)
-  %r282 = call i32 @eval_op(i32 %r327, i32 %r329, i32 %r328)
-  call void @stack_push(i32* %r224, i32 %r282)
-  br label %bb74
-
-bb76:
-  %r283 = call i32 @stack_peek(i32* %r224)
-  ret i32 %r283
-}
-
-define i32 @main( ) {
+  %r579 = call i32 @panic()
+  ret i32 %r579
 bb77:
-  call void @_sysy_starttime(i32 205)
-  %r335 = add i32 0, 0
-  %r336 = call i32 @getint()
-  call void @getch()
-  call void @next_token()
+  %r271 = getelementptr [256 x i32 ], [256 x i32 ]* %r256, i32 0, i32 0
+  %r531 = load i32, i32* @num
+  call void @stack_push(i32* %r271, i32 %r531)
+  %r532 = call i32 @next_token()
   br label %bb78
 
 bb78:
-  %r337 = phi i32 [ %r336, %bb77 ], [ %r338, %bb79 ]
-  %r287 = icmp ne i32 %r337, 0
-  br i1 %r287, label %bb79, label %bb80
+  %r533 = load i32, i32* @cur_token
+  %r534 = load i32, i32* @TOKEN_OTHER
+  %r535 = icmp eq i32 %r533, %r534
+  br i1 %r535, label %bb79, label %bb80
 
 bb79:
-  %r288 = call i32 @eval()
-  call void @putint(i32 %r288)
-  call void @putch(i32 10)
-  %r338 = sub i32 %r337, 1
+  %r547 = load i32, i32* @other
+  %r548 = add i32 %r547, 0
+  %r549 = call i32 @get_op_prec(i32 %r548)
+  %r550 = icmp eq i32 %r549, 0
+  br i1 %r550, label %bb80, label %bb83
+
+bb83:
+  %r551 = call i32 @next_token()
+  br label %bb84
+
+bb84:
+  %r286 = getelementptr [256 x i32 ], [256 x i32 ]* %r257, i32 0, i32 0
+  %r552 = call i32 @stack_size(i32* %r286)
+  %r553 = icmp ne i32 %r552, 0
+  br i1 %r553, label %bb87, label %bb88
+
+bb87:
+  %r578 = add i32 1, 0
+  br label %bb89
+
+bb88:
+  %r577 = add i32 0, 0
+  br label %bb89
+
+bb89:
+  %r554 = phi i32 [ %r578, %bb87 ], [ %r577, %bb88 ]
+  %r555 = icmp ne i32 %r554, 0
+  br i1 %r555, label %bb90, label %bb86
+
+bb90:
+  %r293 = getelementptr [256 x i32 ], [256 x i32 ]* %r257, i32 0, i32 0
+  %r562 = call i32 @stack_peek(i32* %r293)
+  %r563 = call i32 @get_op_prec(i32 %r562)
+  %r564 = call i32 @get_op_prec(i32 %r548)
+  %r565 = icmp sge i32 %r563, %r564
+  br i1 %r565, label %bb91, label %bb92
+
+bb91:
+  %r576 = add i32 1, 0
+  br label %bb93
+
+bb92:
+  %r575 = add i32 0, 0
+  br label %bb93
+
+bb93:
+  %r566 = phi i32 [ %r576, %bb91 ], [ %r575, %bb92 ]
+  %r567 = icmp ne i32 %r566, 0
+  br i1 %r567, label %bb85, label %bb86
+
+bb85:
+  %r299 = getelementptr [256 x i32 ], [256 x i32 ]* %r257, i32 0, i32 0
+  %r568 = call i32 @stack_pop(i32* %r299)
+  %r569 = add i32 %r568, 0
+  %r302 = getelementptr [256 x i32 ], [256 x i32 ]* %r256, i32 0, i32 0
+  %r570 = call i32 @stack_pop(i32* %r302)
+  %r571 = add i32 %r570, 0
+  %r305 = getelementptr [256 x i32 ], [256 x i32 ]* %r256, i32 0, i32 0
+  %r572 = call i32 @stack_pop(i32* %r305)
+  %r573 = add i32 %r572, 0
+  %r307 = getelementptr [256 x i32 ], [256 x i32 ]* %r256, i32 0, i32 0
+  %r574 = call i32 @eval_op(i32 %r569, i32 %r573, i32 %r571)
+  call void @stack_push(i32* %r307, i32 %r574)
+  br label %bb84
+
+bb86:
+  %r312 = getelementptr [256 x i32 ], [256 x i32 ]* %r257, i32 0, i32 0
+  call void @stack_push(i32* %r312, i32 %r548)
+  %r556 = load i32, i32* @cur_token
+  %r557 = load i32, i32* @TOKEN_NUM
+  %r558 = icmp ne i32 %r556, %r557
+  br i1 %r558, label %bb94, label %bb96
+
+bb94:
+  %r561 = call i32 @panic()
+  ret i32 %r561
+bb96:
+  %r318 = getelementptr [256 x i32 ], [256 x i32 ]* %r256, i32 0, i32 0
+  %r559 = load i32, i32* @num
+  call void @stack_push(i32* %r318, i32 %r559)
+  %r560 = call i32 @next_token()
   br label %bb78
 
 bb80:
+  %r536 = call i32 @next_token()
+  br label %bb97
+
+bb97:
+  %r324 = getelementptr [256 x i32 ], [256 x i32 ]* %r257, i32 0, i32 0
+  %r537 = call i32 @stack_size(i32* %r324)
+  %r538 = icmp ne i32 %r537, 0
+  br i1 %r538, label %bb98, label %bb99
+
+bb98:
+  %r326 = getelementptr [256 x i32 ], [256 x i32 ]* %r257, i32 0, i32 0
+  %r540 = call i32 @stack_pop(i32* %r326)
+  %r541 = add i32 %r540, 0
+  %r329 = getelementptr [256 x i32 ], [256 x i32 ]* %r256, i32 0, i32 0
+  %r542 = call i32 @stack_pop(i32* %r329)
+  %r543 = add i32 %r542, 0
+  %r332 = getelementptr [256 x i32 ], [256 x i32 ]* %r256, i32 0, i32 0
+  %r544 = call i32 @stack_pop(i32* %r332)
+  %r545 = add i32 %r544, 0
+  %r334 = getelementptr [256 x i32 ], [256 x i32 ]* %r256, i32 0, i32 0
+  %r546 = call i32 @eval_op(i32 %r541, i32 %r545, i32 %r543)
+  call void @stack_push(i32* %r334, i32 %r546)
+  br label %bb97
+
+bb99:
+  %r340 = getelementptr [256 x i32 ], [256 x i32 ]* %r256, i32 0, i32 0
+  %r539 = call i32 @stack_peek(i32* %r340)
+  ret i32 %r539
+}
+
+define i32 @main( ) {
+main:
+  call void @_sysy_starttime(i32 205)
+  %r583 = call i32 @getint()
+  %r584 = add i32 0, 0
+  %r585 = add i32 %r583, 0
+  %r586 = call i32 @getch()
+  %r587 = call i32 @next_token()
+  br label %bb100
+
+bb100:
+  %r588 = phi i32 [ %r585, %main ], [ %r592, %bb101 ]
+  %r589 = icmp ne i32 %r588, 0
+  br i1 %r589, label %bb101, label %bb102
+
+bb101:
+  %r590 = call i32 @eval()
+  call void @putint(i32 %r590)
+  call void @putch(i32 10)
+  %r591 = sub i32 %r588, 1
+  %r592 = add i32 %r591, 0
+  br label %bb100
+
+bb102:
   call void @_sysy_stoptime(i32 214)
   ret i32 0
 }

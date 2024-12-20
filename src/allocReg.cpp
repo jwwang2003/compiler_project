@@ -6,7 +6,6 @@ using namespace ASM;
 using namespace GRAPH;
 #include "printASM.h"
 #include "register_rules.h"
-#define MYDEBUG() printf("%s:%d\n", __FILE__, __LINE__)
 #include <sstream>
 #include <iostream>
 #include "printASM.h"
@@ -23,6 +22,14 @@ void getAllRegs(AS_stm *stm, vector<AS_reg *> &defs, vector<AS_reg *> &uses)
     case AS_stmkind::MOV:
         getDefReg(stm->u.MOV->dst, defs);
         getUseReg(stm->u.MOV->src, uses);
+        break;
+    case AS_stmkind::MOVZ:
+        getDefReg(stm->u.MOVZ->dst, defs);
+        getUseReg(stm->u.MOVZ->src, uses);
+        break;
+        case AS_stmkind::MOVK:
+        getDefReg(stm->u.MOVK->dst, defs);
+        getUseReg(stm->u.MOVK->src, uses);
         break;
     case AS_stmkind::LDR:
         getDefReg(stm->u.LDR->dst, defs);
@@ -53,7 +60,6 @@ void getDefReg(AS_reg *reg, vector<AS_reg *> &defs)
     switch (reg->type)
     {
     case AS_type::Xn:
-    case AS_type::Wn:
     {
         defs.push_back(reg);
         break;
@@ -76,7 +82,6 @@ void getUseReg(AS_reg *reg, vector<AS_reg *> &uses)
     switch (reg->type)
     {
     case AS_type::Xn:
-    case AS_type::Wn:
     {
         uses.push_back(reg);
         break;
@@ -103,7 +108,6 @@ void vreg_map(AS_reg *reg, unordered_map<int, Node<RegInfo> *> &regNodes)
     switch (reg->type)
     {
     case AS_type::Xn:
-    case AS_type::Wn:
     {
         int regNo = reg->u.offset;
         if (regNo < 100)
@@ -172,7 +176,7 @@ void setControlFlowDiagram(std::list<InstructionNode *> &nodes, unordered_map<st
         }
         switch (currentNode->raw->type)
         {
-        case AS_stmkind::RET:
+        case AS_stmkind::RETURN:
 
             break;
         case AS_stmkind::B:
@@ -214,17 +218,10 @@ void init(std::list<InstructionNode *> &nodes, unordered_map<int, Node<RegInfo> 
                 {
                     n->out.insert(s->in.begin(), s->in.end());
                 }
-
-            // std::set<int> diff;
-            // std::set_difference(n->out.begin(), n->out.end(), n->def.begin(), n->def.end(), std::inserter(diff, diff.end()));
-            // diff.insert(n->use.begin(), n->use.end());
-
-            // n->in = diff;
             n->in.clear();
             std::set_difference(n->out.begin(), n->out.end(), n->def.begin(), n->def.end(), std::inserter(n->in, n->in.end()));
             n->in.insert(n->use.begin(), n->use.end());
             set_size += n->in.size();
-            // printf("%d += %d ,%d ",n->in.size(), set_size,nodes.size());
             if (n->in != n->previous_in || n->out != n->previous_out)
             {
                 changed = true;
@@ -248,7 +245,6 @@ void init(std::list<InstructionNode *> &nodes, unordered_map<int, Node<RegInfo> 
     for (auto x : regs)
     {
         regNodes.insert({x, interferenceGraph.addNode({x, x, 0, 0, 0})});
-        // printf("%d:%lu ", ++ijj, regs.size());
     }
 
     for (auto x : nodes)
@@ -309,11 +305,201 @@ void init(std::list<InstructionNode *> &nodes, unordered_map<int, Node<RegInfo> 
         it++;
     }
 }
+
+static AS_reg *sp = new AS_reg(AS_type::SP, -1);
+
 void livenessAnalysis(std::list<InstructionNode *> &nodes, std::list<ASM::AS_stm *> &as_list)
 {
     Graph<RegInfo> interferenceGraph;
-    unordered_map<int, Node<RegInfo> *> regNodes;
+    unordered_map<int, Node<RegInfo> *> regNodes; // 虚拟寄存器根据编号到干扰图上的映射
     init(nodes, regNodes, interferenceGraph, as_list);
 
-    //TODO:获得干扰图后，进行寄存器分配
+    const int NUM_COLORS = allocateRegs.size();
+    std::vector<int> availableColors(allocateRegs.begin(), allocateRegs.end());
+    std::stack<Node<RegInfo> *> reg_stack;
+
+    // Simplify phase
+    for (auto &nodePair : *interferenceGraph.nodes())
+    {
+        Node<RegInfo> *node = nodePair.second;
+        if (node->info.degree < NUM_COLORS)
+        {
+            reg_stack.push(node);
+        }
+        else
+        {
+            node->info.is_spill = true;
+        }
+    }
+
+    // Coloring phase
+    while (!reg_stack.empty())
+    {
+        Node<RegInfo> *node = reg_stack.top();
+        reg_stack.pop();
+
+        std::vector<bool> colorUsed(NUM_COLORS, false);
+        for (int neighborKey : *node->succ())
+        {
+            Node<RegInfo> *neighbor = interferenceGraph.mynodes[neighborKey];
+            if (neighbor->info.color != -1)
+            {
+                int usedColorIndex = std::distance(availableColors.begin(), std::find(availableColors.begin(), availableColors.end(), neighbor->info.color));
+                if (usedColorIndex < NUM_COLORS)
+                {
+                    colorUsed[usedColorIndex] = true;
+                }
+            }
+        }
+
+        int color = -1;
+        for (int i = 0; i < NUM_COLORS; ++i)
+        {
+            if (!colorUsed[i])
+            {
+                color = availableColors[i];
+                break;
+            }
+        }
+
+        if (color != -1)
+        {
+            node->info.color = color;
+            node->info.is_spill = false;
+        }
+        else
+        {
+            node->info.is_spill = true;
+        }
+    }
+
+    // Calculate spill offsets and adjust stack pointer
+    int spillOffset = 0;
+    std::unordered_map<int, int> spillOffsets; // Store the offset for each spilled register
+
+    for (auto &nodePair : *interferenceGraph.nodes())
+    {
+        Node<RegInfo> *node = nodePair.second;
+        if (node->info.is_spill)
+        {
+            spillOffsets[node->info.regNum] = spillOffset;
+            spillOffset += 8; // Assuming each register occupies 4 bytes
+        }
+    }
+
+    ASM::AS_reg *sp = new ASM::AS_reg(ASM::SP, 0);
+
+    ASM::AS_stm *subSpStm = ASM::AS_Binop(ASM::AS_binopkind::SUB_, sp, new ASM::AS_reg(ASM::IMM, spillOffset), sp);
+    auto it = as_list.begin();
+    while (!((*it)->type == AS_stmkind::BINOP && (*it)->u.BINOP->op == AS_binopkind::SUB_))
+    {
+        ++it;
+    }
+    it++;
+
+    as_list.insert(it, subSpStm);
+
+    // record spill registers
+    std::map<int, bool> spillRegs;
+    spillRegs.insert({XXn1, false});
+    spillRegs.insert({XXn2, false});
+    spillRegs.insert({XXn3, false});
+    spillRegs.insert({XXn4, false});
+
+    // Insert ldr and str instructions for spilled registers
+    for (auto it = as_list.begin(); it != as_list.end(); ++it)
+    {
+        ASM::AS_stm *stm = *it;
+        std::vector<ASM::AS_reg *> defs;
+        std::vector<ASM::AS_reg *> uses;
+        getAllRegs(stm, defs, uses);
+
+        // Insert ldr for uses
+        for (auto &reg : uses)
+        {
+            if (spillOffsets.find(reg->u.offset) != spillOffsets.end())
+            {
+                int offset = spillOffsets[reg->u.offset];
+
+                // Select spill register
+                for(auto spillReg : spillRegs)
+                {
+                    if (!spillReg.second)
+                    {
+                        spillRegs[spillReg.first] = true;
+                        //cout << "Select spill register: " << spillReg.first << endl;
+                        reg->u.offset = spillReg.first;
+                        break;
+                    }
+                }
+
+                if(reg->u.offset != XXn1 && reg->u.offset != XXn2 && reg->u.offset != XXn3 && reg->u.offset != XXn4)
+                {
+                    cout << "Error: spill register not found" << endl;
+                    exit(1);
+                }
+
+                ASM::AS_reg *sp = new ASM::AS_reg(ASM::SP, 0);
+                ASM::AS_address *address = new ASM::AS_address(sp, offset);
+                ASM::AS_stm *ldrStm = ASM::AS_Ldr(new ASM::AS_reg(ASM::Xn, reg->u.offset), new ASM::AS_reg(ASM::ADR, address));
+                it = as_list.insert(it, ldrStm);
+                ++it;
+            }
+        }
+
+        // Insert str for defs
+        for (auto &reg : defs)
+        {
+            if (spillOffsets.find(reg->u.offset) != spillOffsets.end())
+            {
+                int offset = spillOffsets[reg->u.offset];
+
+                // Select spill register
+                for(auto spillReg : spillRegs)
+                {
+                    if (!spillReg.second)
+                    {
+                        spillRegs[spillReg.first] = true;
+                        reg->u.offset = spillReg.first;
+                        break;
+                    }
+                }
+            
+                // Adjust stack pointer at function exit
+                it++;
+                ASM::AS_address *address = new ASM::AS_address(sp, offset);
+                ASM::AS_stm *strStm = ASM::AS_Str(new ASM::AS_reg(ASM::Xn, reg->u.offset), new ASM::AS_reg(ASM::ADR, address));
+                it = as_list.insert(it, strStm);
+            }
+        }
+
+        spillRegs[XXn1] = false;
+        spillRegs[XXn2] = false;
+        spillRegs[XXn3] = false;
+        spillRegs[XXn4] = false;
+    }
+
+    // Update register mapping in the assembly code
+    for (auto &stm : as_list)
+    {
+        std::vector<ASM::AS_reg *> defs;
+        std::vector<ASM::AS_reg *> uses;
+        getAllRegs(stm, defs, uses);
+
+        for (auto &reg : defs)
+        {
+            vreg_map(reg, regNodes);
+        }
+
+        for (auto &reg : uses)
+        {
+            vreg_map(reg, regNodes);
+        }
+    }
+
+    // Clean up
+    for (auto &nodePair : *interferenceGraph.nodes())
+    {
+        delete nodePair.second;
+    }
 }

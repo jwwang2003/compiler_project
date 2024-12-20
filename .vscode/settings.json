@@ -1,0 +1,15 @@
+{
+  "files.associations": {
+    "*.json": "jsonc",
+    "deque": "cpp",
+    "string": "cpp",
+    "vector": "cpp",
+    "array": "cpp",
+    "list": "cpp",
+    "string_view": "cpp",
+    "random": "cpp",
+    "*.tcc": "cpp",
+    "bitset": "cpp",
+    "initializer_list": "cpp"
+  }
+}
